@@ -12,43 +12,66 @@
     <p>Role-based nurse roster with approvals and calendar view. Demo only (local browser data).</p>
   </header>
 
-  <!-- LOGIN / CURRENT USER -->
-  <section class="card login-card">
-    <div class="login-left">
-      <h2>Login</h2>
-      <form id="login-form">
-        <label>
-          Username
-          <input type="text" id="login-username" required />
-        </label>
-        <label>
-          Password
-          <input type="password" id="login-password" required />
-        </label>
-        <button type="submit">Login</button>
-      </form>
-      <p class="note">
-        Initial setup: log in as any existing nurse (username + password). You can create users in the Nurse Master below.
-      </p>
-    </div>
-    <div class="login-right" id="current-user-panel">
-      <h2>Current User</h2>
-      <div id="current-user-info">
-        <p>No user logged in.</p>
-      </div>
-      <button id="logout-btn" type="button" class="secondary" style="display:none;">
-        Logout
-      </button>
-    </div>
-  </section>
+  <!-- MAIN NAVIGATION (acts like multiple pages) -->
+  <nav class="main-nav">
+    <button class="nav-link active" data-target-page="page-dashboard">Dashboard</button>
+    <button class="nav-link" data-target-page="page-nurse-master">Nurse Master</button>
+    <button class="nav-link" data-target-page="page-duty">Duty Assignment</button>
+    <button class="nav-link" data-target-page="page-calendar">Calendar</button>
+    <button class="nav-link" data-target-page="page-requests">Requests &amp; Approvals</button>
+    <button class="nav-link" data-target-page="page-roster">Duty Roster</button>
+  </nav>
 
   <main>
-    <section class="container">
-      <!-- LEFT COLUMN: Nurse Master -->
+    <!-- PAGE 1: DASHBOARD (LOGIN + HOW TO USE) -->
+    <section id="page-dashboard" class="page-section active">
+      <section class="card login-card">
+        <div class="login-left">
+          <h2>Login</h2>
+          <form id="login-form">
+            <label>
+              Username
+              <input type="text" id="login-username" required />
+            </label>
+            <label>
+              Password
+              <input type="password" id="login-password" required />
+            </label>
+            <button type="submit">Login</button>
+          </form>
+          <p class="note">
+            First time: create a <strong>Nursing Superintendent</strong> in Nurse Master, then login here.
+          </p>
+        </div>
+        <div class="login-right" id="current-user-panel">
+          <h2>Current User</h2>
+          <div id="current-user-info">
+            <p>No user logged in.</p>
+          </div>
+          <button id="logout-btn" type="button" class="secondary" style="display:none;">
+            Logout
+          </button>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>How to Use</h2>
+        <ol class="howto">
+          <li>Open <strong>Nurse Master</strong> page and add nurses with roles (Staff Nurse, Incharge, Supervisor, Superintendent).</li>
+          <li>Login using the username/password of the nurse who is working on the duty roster.</li>
+          <li>Use <strong>Duty Assignment</strong> to assign shifts.</li>
+          <li>Use <strong>Calendar</strong> for monthly overview, and <strong>Duty Roster</strong> for the full list.</li>
+          <li>Staff Nurses raise requests on the <strong>Requests &amp; Approvals</strong> page; higher roles approve according to hierarchy.</li>
+        </ol>
+      </section>
+    </section>
+
+    <!-- PAGE 2: NURSE MASTER -->
+    <section id="page-nurse-master" class="page-section">
       <section class="card">
         <h2>Nurse Master</h2>
         <p class="note">
-          Add nurses with full details. Only higher roles can manage lower roles (demo rules enforced in browser).
+          Add nurses with full details. Only higher roles can add nurses at or below their level (demo rule in browser).
         </p>
         <form id="nurse-form">
           <div class="two-col">
@@ -133,9 +156,6 @@
           </div>
 
           <button type="submit">Add Nurse</button>
-          <p class="note">
-            Only a higher-level role can add nurses at or below their level. (Demo logic enforced locally.)
-          </p>
         </form>
 
         <h3>Nurse List</h3>
@@ -154,12 +174,14 @@
           </tbody>
         </table>
       </section>
+    </section>
 
-      <!-- RIGHT COLUMN: Assign Duty + Filters -->
+    <!-- PAGE 3: DUTY ASSIGNMENT -->
+    <section id="page-duty" class="page-section">
       <section class="card">
-        <h2>Assign Duty</h2>
+        <h2>Duty Assignment</h2>
         <p class="note">
-          Logged-in users can assign duties. Higher roles typically manage rosters.
+          Logged-in users can assign duties. Higher roles (Incharge / Supervisor / Superintendent) usually manage rosters.
         </p>
         <form id="duty-form">
           <label>
@@ -224,132 +246,139 @@
       </section>
     </section>
 
-    <!-- CALENDAR VIEW -->
-    <section class="card wide">
-      <header class="card-header">
-        <div>
-          <h2>Calendar View</h2>
-          <p class="note">
-            Monthly overview of duties. Filters above apply here.
-          </p>
-        </div>
-        <div class="calendar-nav">
-          <button id="calendar-prev" type="button" class="secondary small">◀ Prev</button>
-          <div id="calendar-month-label" class="calendar-month-label">Month Year</div>
-          <button id="calendar-next" type="button" class="secondary small">Next ▶</button>
-        </div>
-      </header>
+    <!-- PAGE 4: CALENDAR -->
+    <section id="page-calendar" class="page-section">
+      <section class="card wide">
+        <header class="card-header">
+          <div>
+            <h2>Calendar View</h2>
+            <p class="note">
+              Monthly overview of duties. Filters from Duty Assignment page apply here.
+            </p>
+          </div>
+          <div class="calendar-nav">
+            <button id="calendar-prev" type="button" class="secondary small">◀ Prev</button>
+            <div id="calendar-month-label" class="calendar-month-label">Month Year</div>
+            <button id="calendar-next" type="button" class="secondary small">Next ▶</button>
+          </div>
+        </header>
 
-      <div class="calendar">
-        <div class="calendar-grid-header">
-          <div>Mon</div>
-          <div>Tue</div>
-          <div>Wed</div>
-          <div>Thu</div>
-          <div>Fri</div>
-          <div>Sat</div>
-          <div>Sun</div>
+        <div class="calendar">
+          <div class="calendar-grid-header">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+          </div>
+          <div id="calendar-grid" class="calendar-grid">
+            <!-- Filled by JS -->
+          </div>
         </div>
-        <div id="calendar-grid" class="calendar-grid">
-          <!-- Filled by JS -->
-        </div>
-      </div>
+      </section>
     </section>
 
-    <!-- REQUESTS & APPROVALS -->
-    <section class="card wide">
-      <header class="card-header">
-        <div>
-          <h2>Requests & Approvals</h2>
-          <p class="note">
-            Staff Nurses can request leave or shift change. Higher roles approve according to hierarchy.
-          </p>
-        </div>
-      </header>
+    <!-- PAGE 5: REQUESTS & APPROVALS -->
+    <section id="page-requests" class="page-section">
+      <section class="card wide">
+        <header class="card-header">
+          <div>
+            <h2>Requests &amp; Approvals</h2>
+            <p class="note">
+              Staff Nurses raise requests; Nurse Incharge, Nurse Supervisor and Nursing Superintendent approve according to hierarchy.
+            </p>
+          </div>
+        </header>
 
-      <div class="two-col">
-        <div>
-          <h3>New Request (for logged-in nurse)</h3>
-          <form id="request-form">
-            <label>
-              Request Type
-              <select id="request-type" required>
-                <option value="">Select</option>
-                <option value="leave">Leave</option>
-                <option value="shift-change">Shift Change</option>
-              </select>
-            </label>
-            <div class="two-col">
+        <div class="two-col">
+          <div>
+            <h3>New Request (for logged-in nurse)</h3>
+            <form id="request-form">
               <label>
-                From Date
-                <input type="date" id="request-from" />
+                Request Type
+                <select id="request-type" required>
+                  <option value="">Select</option>
+                  <option value="leave">Leave</option>
+                  <option value="shift-change">Shift Change</option>
+                </select>
               </label>
+              <div class="two-col">
+                <label>
+                  From Date
+                  <input type="date" id="request-from" />
+                </label>
+                <label>
+                  To Date
+                  <input type="date" id="request-to" />
+                </label>
+              </div>
               <label>
-                To Date
-                <input type="date" id="request-to" />
+                Remarks
+                <input type="text" id="request-remarks" placeholder="Reason / comment" />
               </label>
-            </div>
-            <label>
-              Remarks
-              <input type="text" id="request-remarks" placeholder="Reason / comment" />
-            </label>
-            <button type="submit">Submit Request</button>
-          </form>
-        </div>
+              <button type="submit">Submit Request</button>
+            </form>
+          </div>
 
-        <div>
-          <h3>Pending Approvals (for current user)</h3>
-          <table class="table" id="requests-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>For Nurse</th>
-                <th>From–To</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Filled by JS -->
-            </tbody>
-          </table>
+          <div>
+            <h3>Pending Approvals (for current user)</h3>
+            <table class="table" id="requests-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>For Nurse</th>
+                  <th>From–To</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </section>
     </section>
 
-    <!-- ROSTER TABLE -->
-    <section class="card wide">
-      <header class="card-header">
-        <div>
-          <h2>Duty Roster (List View)</h2>
-          <p class="note">
-            Detailed list of all duties. Date filters apply here.
-          </p>
-        </div>
-        <div class="card-actions">
-          <button id="export-csv" type="button" class="secondary">
-            Export CSV
-          </button>
-          <button id="clear-all" type="button" class="danger">
-            Clear All Data</button>
-        </div>
-      </header>
+    <!-- PAGE 6: DUTY ROSTER LIST -->
+    <section id="page-roster" class="page-section">
+      <section class="card wide">
+        <header class="card-header">
+          <div>
+            <h2>Duty Roster (List View)</h2>
+            <p class="note">
+              Detailed list of all duties. Date filters from Duty Assignment page apply here.
+            </p>
+          </div>
+          <div class="card-actions">
+            <button id="export-csv" type="button" class="secondary">
+              Export CSV
+            </button>
+            <button id="clear-all" type="button" class="danger">
+              Clear All Data
+            </button>
+          </div>
+        </header>
 
-      <table class="table" id="schedule-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Nurse</th>
-            <th>Role</th>
-            <th>Ward</th>
-            <th>Shift</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
+        <table class="table" id="schedule-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Nurse</th>
+              <th>Role</th>
+              <th>Ward</th>
+              <th>Shift</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </section>
     </section>
   </main>
 
@@ -357,7 +386,33 @@
     <small>Built by Johnson – Nurse Duty Scheduler (demo, local only).</small>
   </footer>
 
+  <!-- Main app logic -->
   <script src="app.js"></script>
+
+  <!-- Simple nav script to switch between "pages" -->
+  <script>
+    (function() {
+      const navButtons = document.querySelectorAll(".nav-link[data-target-page]");
+      const sections = document.querySelectorAll(".page-section");
+
+      function showPage(id) {
+        sections.forEach(sec => {
+          sec.classList.toggle("active", sec.id === id);
+        });
+        navButtons.forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.targetPage === id);
+        });
+      }
+
+      navButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          showPage(btn.dataset.targetPage);
+        });
+      });
+
+      // Default page
+      showPage("page-dashboard");
+    })();
+  </script>
 </body>
 </html>
-
