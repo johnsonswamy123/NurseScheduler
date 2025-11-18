@@ -1,1 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nurse Duty Scheduler</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Nurse Duty Scheduler</h1>
+    <p>Role-based nurse roster with approvals and calendar view. Demo only (local browser data).</p>
+  </header>
+
+  <!-- LOGIN / CURRENT USER -->
+  <section class="card login-card">
+    <div class="login-left">
+      <h2>Login</h2>
+      <form id="login-form">
+        <label>
+          Username
+          <input type="text" id="login-username" required />
+        </label>
+        <label>
+          Password
+          <input type="password" id="login-password" required />
+        </label>
+        <button type="submit">Login</button>
+      </form>
+      <p class="note">
+        Initial setup: log in as any existing nurse (username + password). You can create users in the Nurse Master below.
+      </p>
+    </div>
+    <div class="login-right" id="current-user-panel">
+      <h2>Current User</h2>
+      <div id="current-user-info">
+        <p>No user logged in.</p>
+      </div>
+      <button id="logout-btn" type="button" class="secondary" style="display:none;">
+        Logout
+      </button>
+    </div>
+  </section>
+
+  <main>
+    <section class="container">
+      <!-- LEFT COLUMN: Nurse Master -->
+      <section class="card">
+        <h2>Nurse Master</h2>
+        <p class="note">
+          Add nurses with full details. Only higher roles can manage lower roles (demo rules enforced in browser).
+        </p>
+        <form id="nurse-form">
+          <div class="two-col">
+            <label>
+              Name
+              <input type="text" id="nurse-name" required />
+            </label>
+            <label>
+              DOB
+              <input type="date" id="nurse-dob" required />
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Gender
+              <select id="nurse-gender" required>
+                <option value="">Select</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label>
+              Years of Experience
+              <input type="number" id="nurse-experience" min="0" max="60" required />
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Blood Group
+              <select id="nurse-blood-group" required>
+                <option value="">Select</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </label>
+            <label>
+              Speciality / Ward
+              <select id="nurse-speciality" required>
+                <option value="">Select</option>
+                <option value="ICU">ICU</option>
+                <option value="Maternity">Maternity</option>
+                <option value="NICU">NICU</option>
+                <option value="General Ward">General Ward</option>
+                <option value="OT">OT</option>
+                <option value="Emergency">Emergency</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Role
+              <select id="nurse-role" required>
+                <option value="">Select role</option>
+                <option value="Staff Nurse">Staff Nurse</option>
+                <option value="Nurse Incharge">Nurse Incharge</option>
+                <option value="Nurse Supervisor">Nurse Supervisor</option>
+                <option value="Nursing Superintendent">Nursing Superintendent</option>
+              </select>
+            </label>
+            <label>
+              Username
+              <input type="text" id="nurse-username" required />
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Password
+              <input type="password" id="nurse-password" required />
+            </label>
+          </div>
+
+          <button type="submit">Add Nurse</button>
+          <p class="note">
+            Only a higher-level role can add nurses at or below their level. (Demo logic enforced locally.)
+          </p>
+        </form>
+
+        <h3>Nurse List</h3>
+        <table class="table" id="nurse-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Ward</th>
+              <th>Exp (yrs)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- RIGHT COLUMN: Assign Duty + Filters -->
+      <section class="card">
+        <h2>Assign Duty</h2>
+        <p class="note">
+          Logged-in users can assign duties. Higher roles typically manage rosters.
+        </p>
+        <form id="duty-form">
+          <label>
+            Date
+            <input type="date" id="duty-date" required />
+          </label>
+
+          <label>
+            Nurse
+            <select id="duty-nurse" required>
+              <!-- Filled by JS -->
+            </select>
+          </label>
+
+          <label>
+            Shift
+            <select id="duty-shift" required>
+              <option value="">Select shift</option>
+              <option value="Morning">Morning (06:00–14:00)</option>
+              <option value="Evening">Evening (14:00–22:00)</option>
+              <option value="Night">Night (22:00–06:00)</option>
+              <option value="Off">Off</option>
+            </select>
+          </label>
+
+          <button type="submit">Save Duty</button>
+          <p class="note">
+            If a duty already exists for the same nurse and date, it will be updated.
+          </p>
+        </form>
+
+        <h3>Filters (apply to list & calendar)</h3>
+        <div class="filters">
+          <label>
+            Nurse
+            <select id="filter-nurse">
+              <!-- Filled by JS -->
+            </select>
+          </label>
+          <label>
+            From
+            <input type="date" id="filter-from" />
+          </label>
+          <label>
+            To
+            <input type="date" id="filter-to" />
+          </label>
+          <label>
+            Shift
+            <select id="filter-shift">
+              <option value="">All shifts</option>
+              <option value="Morning">Morning</option>
+              <option value="Evening">Evening</option>
+              <option value="Night">Night</option>
+              <option value="Off">Off</option>
+            </select>
+          </label>
+          <button id="clear-filters" type="button" class="secondary">
+            Clear Filters
+          </button>
+        </div>
+      </section>
+    </section>
+
+    <!-- CALENDAR VIEW -->
+    <section class="card wide">
+      <header class="card-header">
+        <div>
+          <h2>Calendar View</h2>
+          <p class="note">
+            Monthly overview of duties. Filters above apply here.
+          </p>
+        </div>
+        <div class="calendar-nav">
+          <button id="calendar-prev" type="button" class="secondary small">◀ Prev</button>
+          <div id="calendar-month-label" class="calendar-month-label">Month Year</div>
+          <button id="calendar-next" type="button" class="secondary small">Next ▶</button>
+        </div>
+      </header>
+
+      <div class="calendar">
+        <div class="calendar-grid-header">
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+          <div>Sun</div>
+        </div>
+        <div id="calendar-grid" class="calendar-grid">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- REQUESTS & APPROVALS -->
+    <section class="card wide">
+      <header class="card-header">
+        <div>
+          <h2>Requests & Approvals</h2>
+          <p class="note">
+            Staff Nurses can request leave or shift change. Higher roles approve according to hierarchy.
+          </p>
+        </div>
+      </header>
+
+      <div class="two-col">
+        <div>
+          <h3>New Request (for logged-in nurse)</h3>
+          <form id="request-form">
+            <label>
+              Request Type
+              <select id="request-type" required>
+                <option value="">Select</option>
+                <option value="leave">Leave</option>
+                <option value="shift-change">Shift Change</option>
+              </select>
+            </label>
+            <div class="two-col">
+              <label>
+                From Date
+                <input type="date" id="request-from" />
+              </label>
+              <label>
+                To Date
+                <input type="date" id="request-to" />
+              </label>
+            </div>
+            <label>
+              Remarks
+              <input type="text" id="request-remarks" placeholder="Reason / comment" />
+            </label>
+            <button type="submit">Submit Request</button>
+          </form>
+        </div>
+
+        <div>
+          <h3>Pending Approvals (for current user)</h3>
+          <table class="table" id="requests-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>For Nurse</th>
+                <th>From–To</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROSTER TABLE -->
+    <section class="card wide">
+      <header class="card-header">
+        <div>
+          <h2>Duty Roster (List View)</h2>
+          <p class="note">
+            Detailed list of all duties. Date filters apply here.
+          </p>
+        </div>
+        <div class="card-actions">
+          <button id="export-csv" type="button" class="secondary">
+            Export CSV
+          </button>
+          <button id="clear-all" type="button" class="danger">
+            Clear All Data</button>
+        </div>
+      </header>
+
+      <table class="table" id="schedule-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Nurse</th>
+            <th>Role</th>
+            <th>Ward</th>
+            <th>Shift</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>Built by Johnson – Nurse Duty Scheduler (demo, local only).</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
 
