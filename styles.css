@@ -27,11 +27,51 @@ body {
   opacity: 0.9;
 }
 
+/* MAIN NAV */
+
+.main-nav {
+  max-width: 1200px;
+  margin: 0.5rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 1rem 0.5rem;
+}
+
+.nav-link {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #374151;
+}
+
+.nav-link.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+/* PAGE SECTIONS */
+
 main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
 }
+
+.page-section {
+  display: none;
+  margin-top: 0.5rem;
+}
+
+.page-section.active {
+  display: block;
+}
+
+/* GENERAL CARDS & LAYOUT */
 
 .container {
   display: grid;
@@ -175,8 +215,6 @@ button.small {
 /* LOGIN CARD */
 
 .login-card {
-  max-width: 1200px;
-  margin: 1rem auto 0;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 1rem;
